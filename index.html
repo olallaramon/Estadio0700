@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Estadio Avanzado</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            background-color: #a9d1a9;
+            border: 2px solid #000;
+            display: block;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="stadiumCanvas" width="800" height="600"></canvas>
+
+<script>
+    const canvas = document.getElementById("stadiumCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const elements = [
+        { type: "grada", x: 100, y: 100, width: 150, height: 50, color: "blue", isDragged: false },
+        { type: "grada", x: 300, y: 100, width: 150, height: 50, color: "blue", isDragged: false },
+        { type: "porteria", x: 350, y: 500, width: 80, height: 30, color: "white", isDragged: false },
+        { type: "zona-vip", x: 600, y: 50, width: 180, height: 70, color: "gold", isDragged: false }
+    ];
+
+    // Dibuja los elementos en el canvas
+    function drawElements() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpiar el canvas
+        elements.forEach(element => {
+            ctx.fillStyle = element.color;
+            ctx.fillRect(element.x, element.y, element.width, element.height);
+        });
+    }
+
+    drawElements();
+
+    // Mover los elementos
+    let offsetX, offsetY;
+    canvas.addEventListener("mousedown", (e) => {
+        const mouseX = e.offsetX;
+        const mouseY = e.offsetY;
+
+        elements.forEach(element => {
+            if (
+                mouseX > element.x && mouseX < element.x + element.width &&
+                mouseY > element.y && mouseY < element.y + element.height
+            ) {
+                element.isDragged = true;
+                offsetX = mouseX - element.x;
+                offsetY = mouseY - element.y;
+            }
+        });
+    });
+
+    canvas.addEventListener("mousemove", (e) => {
+        if (elements.some(element => element.isDragged)) {
+            const mouseX = e.offsetX;
+            const mouseY = e.offsetY;
+
+            elements.forEach(element => {
+                if (element.isDragged) {
+                    element.x = mouseX - offsetX;
+                    element.y = mouseY - offsetY;
+                    drawElements();
+                }
+            });
+        }
+    });
+
+    canvas.addEventListener("mouseup", () => {
+        elements.forEach(element => {
+            element.isDragged = false;
+        });
+    });
+</script>
+
+</body>
+</html>
+
